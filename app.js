@@ -8,6 +8,7 @@ class SigData{
             clientY:0,
             overed:true
         }
+        this.select_panal_ele = null
     }
 
     add_poly(poly){
@@ -40,6 +41,20 @@ class SigData{
         if (((clientX-x)**2 + (clientY-y)**2 ) > 10) return true
         return false
     }
+
+
+    draw_map(){
+        this.polyList.map(e=>{
+            e._path.attributes['fill'].value = this.get_color()
+            e._path.attributes['fill-opacity'].value = this.get_opt()
+        })
+    }
+
+    draw_panal(){
+        console.log('draw_panal',this.select_panal_ele,this.value)
+        const inputs = [...this.select_panal_ele.getElementsByTagName('input')]
+        inputs[5-this.value].checked=true
+    }
 }
 
 class App{
@@ -57,12 +72,18 @@ class App{
 
         const before_search_parm =  (new URLSearchParams(location.search)).get('sig')
         if(before_search_parm){
-            const data = this.decode(before_search_parm)
-            console.log('bf data:',data)
-            this.cd_keys.forEach((key,i)=>{
-                if(!this.polyDict[key]) this.polyDict[key] = new SigData();
-                this.polyDict[key].value = data[i]
-            })
+            try{
+                const data = this.decode(before_search_parm)
+                console.log('bf data:',data)
+                this.cd_keys.forEach((key,i)=>{
+                    if(!this.polyDict[key]) this.polyDict[key] = new SigData();
+                    this.polyDict[key].value = data[i]
+                })
+            }catch(e){
+                console.log('error!',e)
+                alert('잘못된 기록 형식입니다.')
+            }
+            
         }
         
         L.tileLayer(`https://tile.openstreetmap.org/{z}/{x}/{y}.png`, {
@@ -156,11 +177,10 @@ class App{
 
                         sigData.value_change()
                         // console.log(CD,sigData,   sigData.get_color())
-                        sigData.polyList.map(e=>{
-                            e._path.attributes['fill'].value = sigData.get_color()
-                            e._path.attributes['fill-opacity'].value = sigData.get_opt()
-                        })
+                        sigData.draw_map()
+                        sigData.draw_panal()
                         this.draw_visit_panal()
+                        // this.draw_select_panal()
                         this.queryString_setup()
                         
                     })
@@ -168,6 +188,33 @@ class App{
             })
         })
         this.draw_visit_panal();
+        this.draw_select_panal()
+
+        document.getElementById('select_panal').addEventListener('change',e=>{
+            // console.log(e,e.target)
+            // const cd = e.target.attributes['data-cd']
+            // if(!cd) return>
+            const ar = [...document.querySelectorAll('#select_panal div.prov>div.select_panal>div:not(div:first-child)')]
+            if(!ar) throw('오류')
+            ar.forEach(ele=>{
+                // console.log('ele',ele)
+                const cd = ele.attributes['data-cd'].value
+                const inputs = [...ele.getElementsByTagName('input')]
+                if(!inputs) throw('오류')
+                const value = 5-inputs.map(v=>v.checked).indexOf(true)
+                const sigData = this.polyDict[cd]
+                if(!sigData) throw('오류')
+                if(sigData.value!=value){
+                    sigData.value=value
+                    sigData.draw_map()
+                    
+                }
+
+            })
+            this.draw_visit_panal()
+            this.queryString_setup()
+
+        })
         
 
     }
@@ -175,15 +222,17 @@ class App{
     draw_visit_panal(){
         const visit_panal = document.getElementById('visit_panal')
 
-        const outList = [[],[],[],[],[],[]]
+        const outList = [[],[],[],[],[],[]];
         for(const key in this.polyDict){
             const i = this.polyDict[key].value
+            if(i===undefined) {console.error("이상"); continue}
             // console.log('i',i,((5-i)*2+1),key)
             if(!cd[key]) {console.error(cd[key],key,i,this.polyDict[key].polyList[0]._path,'없어'); return}
+            // console.log('outlist',outList,i)
             outList[i].push(cd[key])
         }
 
-        console.log(outList)
+        // console.log(outList)
 
         function summary_output(temp1){
             const d_dict = {}
@@ -218,6 +267,71 @@ class App{
         //
     }
 
+
+    draw_select_panal(){
+        const province_panal = (pname, list) => {
+            return ` <div class="prov card pd-4 my-4">
+                <h5 class="my-3 mx-4">${pname}</h5>
+                <div id="" class="select_panal">
+                    <div>
+                        <span>시/군/구</span>
+                        <span>거주</span>
+                        <span>숙박</span>
+                        <span>방문</span>
+                        <span>접지</span>
+                        <span>통과</span>
+                        <span>없음</span>
+                    </div>
+                    ${list.map((city,i)=>
+                        `<div data-cd=${city.cd}>
+                            <span>${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
+                            <span><label for="local-${pname}-${i}-5"><input type="radio" id="local-${pname}-${i}-5" name="local-${pname}-${i}" value="5" ${city.value==5?"checked":''}></label></span>
+                            <span><label for="local-${pname}-${i}-4"><input type="radio" id="local-${pname}-${i}-4" name="local-${pname}-${i}" value="4" ${city.value==4?"checked":''}></label></span>
+                            <span><label for="local-${pname}-${i}-3"><input type="radio" id="local-${pname}-${i}-3" name="local-${pname}-${i}" value="3" ${city.value==3?"checked":''}></label></span>
+                            <span><label for="local-${pname}-${i}-2"><input type="radio" id="local-${pname}-${i}-2" name="local-${pname}-${i}" value="2" ${city.value==2?"checked":''}></label></span>
+                            <span><label for="local-${pname}-${i}-1"><input type="radio" id="local-${pname}-${i}-1" name="local-${pname}-${i}" value="1" ${city.value==1?"checked":''}></label></span>
+                            <span><label for="local-${pname}-${i}-0"><input type="radio" id="local-${pname}-${i}-0" name="local-${pname}-${i}" value="0" ${city.value==0?"checked":''}></label></span>
+                        </div>`
+                    ).join('')}
+                </div>
+            </div>`
+        }
+
+        this.cd_keys
+
+        const d_dict = {}
+        this.cd_keys.map(key => {
+            const v = cd[key]
+            const sp = v.split(' ')
+            const d = sp[0]
+            const e = sp.splice(1).join(' ')
+            if (!d_dict[d]) d_dict[d] = []
+            d_dict[d].push({name:e, cd:key, value:this.polyDict[key].value})
+        })
+        let out = []
+        for (const key in d_dict) {
+            const v = d_dict[key]
+            out.push(province_panal(key, v))
+        }
+        // document.getElementById('select_panal').innerHTML = out
+        const p_ar = [...document.querySelectorAll('#select_panal>div')]
+        const min_ind = ar=>ar.indexOf(Math.min(...ar))
+        
+        for(const html of out){
+            const min =  min_ind(p_ar.map(v=>v.innerHTML.length))
+            // console.log(html, min)
+            p_ar[min].innerHTML += html
+        }
+
+        // select_panal_ele     
+        const local_ar = [...document.querySelectorAll('div.select_panal>div:not(div:first-child)')]
+        if(!local_ar) throw('err')
+        local_ar.map(ele=>{
+            const cd = ele.attributes['data-cd'].value
+            this.polyDict[cd].select_panal_ele = ele
+        })
+
+    }
 
     queryString_setup(){
         const a = this.cd_keys.map(key=>this.polyDict[key]?.value)
@@ -285,6 +399,7 @@ class App{
 
         for(const c of str){
             const v = '_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789='.indexOf(c)
+            if(v==-1) throw('이상한 문자')
             top += 6
             last = last*(1<<6)+v
 

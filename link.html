@@ -10,28 +10,35 @@
     <link rel="stylesheet" href="./main.css">
     <link rel="stylesheet" href="./s/leaflet/leaflet.css">
     <script src="./s/leaflet/leaflet.js"></script>
-    <script src="./app.js"></script>
 </head>
-<body>
-    <header><h2>대한민국 어디까지 가봤니</h2><h5>경현치(経県値) 한국어판 지도</h5></header>
+<body class="bg-light">
+    <div class="container">
+    <header class="py-5 text-center"><h2>대한민국 어디까지 가봤니</h2><h5>방문한 지역 지도 그리기</h5></header>
     <main>
 
             <h2>링크</h2>
             <ul>
-                <li><a href="https://kkn.snack.studio/">경현치 한국어 번역</a></li>
-                <li><a href="https://debugger-net.github.io/keikenchi-kor/map.html">경현치 대한민국 var</a></li>
+                <li><a href="https://kkn.snack.studio/">경현치(経県値) 한국어 번역</a></li>
+                <li><a href="https://debugger-net.github.io/keikenchi-kor/map.html">경현치(経県値) 대한민국 var</a></li>
+                <li><a href="http://www.gisdeveloper.co.kr/?p=2332">대한민국 행정구역 데이터 출처</a></li>
             </ul>
         </p>
     </main>
-    <footer>
+    <footer class="my-5 pt-5 text-muted text-center text-small">
         <p>2022 ⓒ esctabcapslock</p>
 
         <p>이 사이트는 <a href="https://uub.jp/kkn/">https://uub.jp/kkn/</a>의 경현치(経県値) 지도를 참고하여 만들었습니다.</p>
+        <p>
+            <a href="./">메인</a>
+            <a href="https://github.com/esctabcapslock/kkn/issues">오류제보</a>
+            <a href="https://github.com/esctabcapslock/kkn">소스코드</a>
+            <a href="mailto:test@mail.esclock.net">이메일</a>
+        </p>
     </footer>
+</div>
 
     
     <script>
-        const app = new App();
     </script>
     
 </body>

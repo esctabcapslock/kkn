@@ -15,23 +15,25 @@
     <script src="./app.js"></script>
 </head>
 <body class="bg-light">
-    <div class="container">
+    <div class="container-fluid">
     <header class="py-5 text-center"><h2>대한민국 어디까지 가봤니</h2><h5>방문한 지역 지도 그리기</h5></header>
     <main>
         <div class="row my-5">
-            <h2>점수</h2>
-            <div id="point_table" class="col-md">
-                <div><span>유형    </span><span>설명</span><span>배점</span></div>
-                <div><span>거주    </span><span>(3개월 이상 장기 채류)</span><span>5점</span></div>
-                <div><span>숙박    </span><span>(야간 통과 제외)</span><span>4점</span></div>
-                <div><span>방문    </span><span>(숙박한 적은 없음)</span><span>3점</span></div>
-                <div><span>접지    </span><span>(환승이나 휴게소에서의 휴식)</span><span>2점</span></div>
-                <div><span>통과    </span><span>(철도, 자동차 등의 통과나 선박의 경유. 항공 통과 제외)</span><span>1점</span></div>
-                <div><span>없음    </span><span>(가본 적이 없음)</span><span>0점</span></div>
-            </div>
+            <div style="margin: auto;" class="col-md-10">
+                <h2>점수</h2>
+                <div id="point_table" class="col-md-20" style="margin: auto;" >
+                    <div><span>유형    </span><span>설명</span><span>배점</span></div>
+                    <div><span>거주    </span><span>(3개월 이상 장기 채류)</span><span>5점</span></div>
+                    <div><span>숙박    </span><span>(야간 통과 제외)</span><span>4점</span></div>
+                    <div><span>방문    </span><span>(숙박한 적은 없음)</span><span>3점</span></div>
+                    <div><span>접지    </span><span>(환승이나 휴게소에서의 휴식)</span><span>2점</span></div>
+                    <div><span>통과    </span><span>(철도, 자동차 등의 통과나 선박의 경유. 항공 통과 제외)</span><span>1점</span></div>
+                    <div><span>없음    </span><span>(가본 적이 없음)</span><span>0점</span></div>
+                </div>
 
-            <div class="text-muted text-small my-2">
-                이 점수는 일본 지리 정보 사이트 <a href="https://uub.jp/">都道府県市区町村</a>의 게시판 이용자들이 고안한 것입니다.
+                <div class="text-muted text-small my-2">
+                    이 점수는 일본 지리 정보 사이트 <a href="https://uub.jp/">都道府県市区町村</a>의 게시판 이용자들이 고안한 것입니다.
+                </div>
             </div>
         </div>
 
@@ -40,7 +42,7 @@
         </div>
 
 
-        <p>
+        <div>
             <div id="visit_panal">
                 <div class="vp_hd">
                     <span>합계</span><span></span><span>합계: <span>0</span>/<span class="cd_ln"></span></span>
@@ -70,16 +72,56 @@
                 </div>
                 <div></div>
             </div>
-        </p>
-        <p>
-            <div id="select_panal"></div>
-        </p>
+        </div>
+        <div id="select_panal" class="row">
+            <div class="col-md-4 w-33 p-4 px-2"></div>
+            <div class="col-md-4 w-33 p-4 px-2"></div>
+            <div class="col-md-4 w-33 p-4 px-2"></div>
+            <!-- <div class="prov">
+                <h5>강원도</h5>
+                <div id="" class="select_panal">
+                    <div>
+                        <span>시/군/구</span>
+                        <span>거주</span>
+                        <span>숙박</span>
+                        <span>방문</span>
+                        <span>접지</span>
+                        <span>통과</span>
+                        <span>없음</span>
+                    </div>
+                    <div>
+                        <span>고성군</span>
+                        <span><label for="local-1-5"><input type="radio" id="local-1-5" name="local-1" value="5"></span>
+                        <span><label for="local-1-4"><input type="radio" id="local-1-4" name="local-1" value="4"></span>
+                        <span><label for="local-1-3"><input type="radio" id="local-1-3" name="local-1" value="3"></span>
+                        <span><label for="local-1-2"><input type="radio" id="local-1-2" name="local-1" value="2"></span>
+                        <span><label for="local-1-1"><input type="radio" id="local-1-1" name="local-1" value="1"></span>
+                        <span><label for="local-1-0"><input type="radio" id="local-1-0" name="local-1" value="0" checked></label></span>
+                    </div>
+                    <div>
+                        <span>동해시</span>
+                        <span><label for="local-2-5"><input type="radio" id="local-2-5" name="local-2" value="5"></span>
+                        <span><label for="local-2-4"><input type="radio" id="local-2-4" name="local-2" value="4"></span>
+                        <span><label for="local-2-3"><input type="radio" id="local-2-3" name="local-2" value="3"></span>
+                        <span><label for="local-2-2"><input type="radio" id="local-2-2" name="local-2" value="2"></span>
+                        <span><label for="local-2-1"><input type="radio" id="local-2-1" name="local-2" value="1"></span>
+                        <span><label for="local-2-0"><input type="radio" id="local-2-0" name="local-2" value="0" checked></label></span>
+                    </div>
+
+                </div>
+            </div> -->
+        </div>
     </main>
     <footer class="my-5 pt-5 text-muted text-center text-small">
         <p>2022 ⓒ esctabcapslock</p>
 
         <p>이 사이트는 <a href="https://uub.jp/kkn/">https://uub.jp/kkn/</a>의 경현치(経県値) 지도를 참고하여 만들었습니다.</p>
-        <p>대한민국 행정구역 데이터 <a href="http://www.gisdeveloper.co.kr/?p=2332">출처</a>.</p>
+        <p>
+            <a href="./link">관련사이트</a>
+            <a href="https://github.com/esctabcapslock/kkn/issues">오류제보</a>
+            <a href="https://github.com/esctabcapslock/kkn">소스코드</a>
+            <a href="mailto:test@mail.esclock.net">이메일</a>
+        </p>
     </footer>
 
 </div>
