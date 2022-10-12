@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대한민국 어디까지 가봤니</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="./s/leaflet/leaflet.css">
+    <script src="./geodata/border_4326_100m_simple_rmisland_rmnorth.js"></script>
+    <script src="./geodata/cd.js"></script>
+    <script src="./s/leaflet/leaflet.js"></script>
+    <script src="./app.js"></script>
+</head>
+<body class="bg-light">
+    <div class="container">
+    <header class="py-5 text-center"><h2>대한민국 어디까지 가봤니</h2><h5>경현치(経県値) 한국어판 지도</h5></header>
+    <main>
+        <p>
+            <h2>점수</h2>
+            <div id="point_table">
+                <div><span>유형    </span><span>설명</span><span>배점</span></div>
+                <div><span>거주    </span><span>(3개월 이상 장기 채류)</span><span>5점</span></div>
+                <div><span>숙박    </span><span>(야간 통과 제외)</span><span>4점</span></div>
+                <div><span>방문    </span><span>(숙박한 적은 없음)</span><span>3점</span></div>
+                <div><span>접지    </span><span>(환승이나 휴게소에서의 휴식)</span><span>2점</span></div>
+                <div><span>통과    </span><span>(철도, 자동차 등의 통과나 선박의 경유. 항공 통과 제외)</span><span>1점</span></div>
+                <div><span>없음    </span><span>(가본 적이 없음)</span><span>0점</span></div>
+            </div>
+
+            이 점수는 일본 지리 정보 사이트 <a href="https://uub.jp/">都道府県市区町村</a>의 게시판 이용자들이 고안한 것입니다.
+        </p>
+        <p>
+            <div id="map"></div>
+        </p>
+
+
+        <p>
+            <div id="visit_panal">
+                <div class="vp_hd">
+                    <span>합계</span><span></span><span>합계: <span>0</span>/<span class="cd_ln"></span></span>
+                </div>
+                <div class="vp_hd vp_bd">
+                    <span>거주</span><span>살았다</span><span>5점 ×	<span>0</span></span>
+                </div>
+                <div></div>
+                <div class="vp_hd vp_bd">
+                    <span>숙박</span><span>묵었다</span><span>4점 ×	<span>0</span></span>
+                </div>
+                <div></div>
+                <div class="vp_hd vp_bd">
+                    <span>방문</span><span>걸었다</span><span>3점 ×	<span>0</span></span>
+                </div>
+                <div></div>
+                <div class="vp_hd vp_bd">
+                    <span>접지</span><span>내렸다</span><span>2점 ×	<span>0</span></span>
+                </div>
+                <div></div>
+                <div class="vp_hd vp_bd">
+                    <span>통과</span><span>통과했다</span><span>1점 ×	<span>0</span></span>
+                </div>
+                <div></div>
+                <div class="vp_hd vp_bd">
+                    <span>없음</span><span>경험 없음</span><span>0점 ×	<span>0</span></span>
+                </div>
+                <div></div>
+            </div>
+        </p>
+        <p>
+            <div id="select_panal"></div>
+        </p>
+    </main>
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p>2022 ⓒ esctabcapslock</p>
+
+        <p>이 사이트는 <a href="https://uub.jp/kkn/">https://uub.jp/kkn/</a>의 경현치(経県値) 지도를 참고하여 만들었습니다.</p>
+        <p>대한민국 행정구역 데이터 <a href="http://www.gisdeveloper.co.kr/?p=2332">출처</a>.</p>
+    </footer>
+
+</div>
+    
+    <script>
+        const app = new App();
+    </script>
+    
+</body>
+</html>

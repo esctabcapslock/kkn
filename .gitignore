@@ -1,0 +1,10 @@
+*.cpg
+*.dbf
+*.prj
+*.shx
+*.shp
+*.geojson
+*.qmd
+geodata/mydata.js
+
+
