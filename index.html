@@ -16,11 +16,11 @@
 </head>
 <body class="bg-light">
     <div class="container">
-    <header class="py-5 text-center"><h2>대한민국 어디까지 가봤니</h2><h5>경현치(経県値) 한국어판 지도</h5></header>
+    <header class="py-5 text-center"><h2>대한민국 어디까지 가봤니</h2><h5>방문한 지역 지도 그리기</h5></header>
     <main>
-        <p>
+        <div class="row my-5">
             <h2>점수</h2>
-            <div id="point_table">
+            <div id="point_table" class="col-md">
                 <div><span>유형    </span><span>설명</span><span>배점</span></div>
                 <div><span>거주    </span><span>(3개월 이상 장기 채류)</span><span>5점</span></div>
                 <div><span>숙박    </span><span>(야간 통과 제외)</span><span>4점</span></div>
@@ -30,11 +30,14 @@
                 <div><span>없음    </span><span>(가본 적이 없음)</span><span>0점</span></div>
             </div>
 
-            이 점수는 일본 지리 정보 사이트 <a href="https://uub.jp/">都道府県市区町村</a>의 게시판 이용자들이 고안한 것입니다.
-        </p>
-        <p>
+            <div class="text-muted text-small my-2">
+                이 점수는 일본 지리 정보 사이트 <a href="https://uub.jp/">都道府県市区町村</a>의 게시판 이용자들이 고안한 것입니다.
+            </div>
+        </div>
+
+        <div>
             <div id="map"></div>
-        </p>
+        </div>
 
 
         <p>
