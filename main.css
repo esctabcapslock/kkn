@@ -133,3 +133,32 @@
 .select_panal>div:not(div:first-child)>span:nth-child(5){background-color: rgba(50,  250, 103, 0.2);}
 .select_panal>div:not(div:first-child)>span:nth-child(6){background-color: rgba(63,  85,  255, 0.2);}
 .select_panal>div:not(div:first-child)>span:nth-child(7){background-color: rgba(159, 159, 159, 0.2);}
+.select_panal>div:not(div:first-child)>span:nth-child(1):hover{background-color: rgba(103, 103, 103, 0.2);}
+.select_panal>div:not(div:first-child)>span:nth-child(2):hover{background-color: rgba(206, 206, 206, 0.4);}
+.select_panal>div:not(div:first-child)>span:nth-child(3):hover{background-color: rgba(245, 109, 100, 0.4);}
+.select_panal>div:not(div:first-child)>span:nth-child(4):hover{background-color: rgba(247, 255, 94,  0.4);}
+.select_panal>div:not(div:first-child)>span:nth-child(5):hover{background-color: rgba(50,  250, 103, 0.4);}
+.select_panal>div:not(div:first-child)>span:nth-child(6):hover{background-color: rgba(63,  85,  255, 0.4);}
+.select_panal>div:not(div:first-child)>span:nth-child(7):hover{background-color: rgba(159, 159, 159, 0.4);}
+
+.btn-primary:focus{
+    box-shadow: 0 0 0 .25rem rgba(49, 132, 253, .5);
+}
+
+#map_tool_location{
+    z-index: 1000;
+    position: relative;
+    height: 0;
+    top: 0.8em;
+    width: 100%;
+    padding: 0.8em;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    display: flex;
+    justify-content: end;
+}
+#map_tool_location ul{
+    max-height: 400px;
+    overflow-y: scroll;
+}

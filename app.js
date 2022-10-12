@@ -1,6 +1,7 @@
 class SigData{
     constructor(){
         this.polyList = []
+        this.polyGroup = null
         this.value = 0
         this.mousedown = {
             time:null,
@@ -55,6 +56,11 @@ class SigData{
         const inputs = [...this.select_panal_ele.getElementsByTagName('input')]
         inputs[5-this.value].checked=true
     }
+
+    focus_on(map){
+        map.fitBounds(this.polyList[0].getBounds());
+        document.documentElement.scrollTo(0,document.getElementById('map').offsetTop-15)
+    }
 }
 
 class App{
@@ -63,12 +69,32 @@ class App{
         this.map = map
         this.polyDict = {};
 
+        // 시군구 cd값 모아놓은 배열
         this.cd_keys = []
         for(const key in cd) this.cd_keys.push(key)
         this.cd_keys.sort((a,b)=>a-b);
         for(const ele of document.getElementsByClassName('cd_ln')) ele.innerHTML = 5*this.cd_keys.length
         
+        // 시/도별 모아놓은 딕셔너리 만들기
+        /** @type {[key:string:{name:string, cd:string}[]]} */
+        this.city_dict = {}
+        this.cd_keys.map(key => {
+            const v = cd[key]
+            const sp = v.split(' ')
+            const d = sp[0]
+            const e = sp.splice(1).join(' ')
+            if (!this.city_dict[d]) this.city_dict[d] = []
+            this.city_dict[d].push({name:e, cd:key})
+        })
 
+        // 위치 설정
+        document.getElementById('url_copy_input').value = location
+        document.getElementById('url_copy_btn').addEventListener('click',e=>{
+            copy2(location)
+            e.target.focus()
+        })
+
+        
 
         const before_search_parm =  (new URLSearchParams(location.search)).get('sig')
         if(before_search_parm){
@@ -108,9 +134,22 @@ class App{
                 console.log(e)
             })
 
-            v.geometry.coordinates.map(e1=>{
-                e1.map(e=>{
-                    const polygon = L.polygon(e.map(a=>[a[1],a[0]]),{
+            sigData.polyGroup = layerGroup
+            let coordinates = []
+            for(const coordinate of v.geometry.coordinates){
+                for(const item of coordinate) coordinates.push(item)
+            }
+
+            // console.log(coordinates)
+
+            // console.log('[coordinates]',coordinates)
+            coordinates = coordinates.map(e=>e.map(a=>[a[1],a[0]]))
+
+            // v.geometry.coordinates.map(e1=>{
+                // e1.map(e=>{
+                    // console.log('e1',e1)
+                    const polygon = L.polygon(coordinates,{
+                    // const polygon = L.polygon(e.map(a=>[a[1],a[0]]),{
                         fillOpacity:sigData.get_opt(),
                         color:'#000000',
                         stoke:true,
@@ -127,11 +166,23 @@ class App{
 
                     // TODO mousedown 시간 비교해서 드래그면 이벤트 발생 안하기.
 
+                    polygon._path.addEventListener('pointerdown',e=>{
+                        const sp = cd[CD].split(' ')
+                        this.map_dropdown_drow(sp[0], sp.splice(1).join(' '))
+                    })
+
+
                     polygon._path.addEventListener('mouseover',e=>{
                         const sigData = this.polyDict[CD]
                         sigData.polyList.map(e=>{
                             e._path.attributes['stroke-width'].value = 2
-                        })  
+                        })
+                        // map_dropdown_drow
+                        
+
+                        const sp = cd[CD].split(' ')
+                        this.map_dropdown_drow(sp[0], sp.splice(1).join(' '))
+
                     })
 
                     polygon._path.addEventListener('mouseout',e=>{
@@ -183,12 +234,15 @@ class App{
                         // this.draw_select_panal()
                         this.queryString_setup()
                         
-                    })
-                })
+                    // })
+                // })
             })
         })
         this.draw_visit_panal();
         this.draw_select_panal()
+
+        // 지도 시도설정
+        this.map_dropdown_drow_init()
 
         document.getElementById('select_panal').addEventListener('change',e=>{
             // console.log(e,e.target)
@@ -219,6 +273,37 @@ class App{
 
     }
 
+
+    __summary_output(temp1){
+        const d_dict = {}
+        temp1.map(v => {
+            const sp = v.name.split(' ')
+            const d = sp[0]
+            const e = sp.splice(1).join(' ')
+            if (!d_dict[d]) d_dict[d] = []
+            d_dict[d].push({name:e, cd:v.cd})
+
+        })
+        let out = []
+        for (const key in d_dict) {
+            const v = d_dict[key]
+            const details = document.createElement('details')
+            details.innerHTML = `<summary>${key} (${v.length})</summary>`
+            for(const item of v){
+                const span = document.createElement('span')
+                span.classList.add('vp_item')
+                span.innerText = item.name
+                const sigData = this.polyDict[item.cd]
+                const map = this.map
+                span.addEventListener('click',()=>{sigData.focus_on(map)})
+                details.appendChild(span)
+            }
+            out.push(details)
+        }
+        return out
+    }
+
+
     draw_visit_panal(){
         const visit_panal = document.getElementById('visit_panal')
 
@@ -229,36 +314,20 @@ class App{
             // console.log('i',i,((5-i)*2+1),key)
             if(!cd[key]) {console.error(cd[key],key,i,this.polyDict[key].polyList[0]._path,'없어'); return}
             // console.log('outlist',outList,i)
-            outList[i].push(cd[key])
+            outList[i].push({name:cd[key], cd:key})
         }
 
         // console.log(outList)
 
-        function summary_output(temp1){
-            const d_dict = {}
-            temp1.map(v => {
-                const sp = v.split(' ')
-                const d = sp[0]
-                const e = sp.splice(1).join(' ')
-                if (!d_dict[d]) d_dict[d] = []
-                d_dict[d].push(e)
-
-            })
-            let out = ''
-            for (const key in d_dict) {
-                const v = d_dict[key]
-                out += `<details>
-                        <summary>${key} (${v.length})</summary>
-                        ${v.map(v => '<span class="vp_item">' + v + '</span>').join(' ')}
-                    </details>`
-            }
-            return out
-        }
+        
 
         const score_list = document.querySelectorAll('#visit_panal .vp_hd>span:nth-child(3)>span:first-child')
         let total_score = 0
         for(let i=0; i<=5; i++){
-            visit_panal.children[((5-i)*2+2)].innerHTML = `<span>${summary_output(outList[i])}</span>`//.map(v=>`<span>${v}</span>`).join(' ')
+            const span = document.createElement('span')
+            this.__summary_output(outList[i]).forEach(ele=>span.appendChild(ele))
+            removeChilds(visit_panal.children[((5-i)*2+2)])
+            visit_panal.children[((5-i)*2+2)].append(span)
             // visit_panal.children[((5-i)*2+1)].innerHTML = outList[i].map(v=>`<span>${v}</span>`).join(' ')
             score_list[6-i].innerHTML = outList[i].length
             total_score += outList[i].length * i
@@ -284,7 +353,7 @@ class App{
                     </div>
                     ${list.map((city,i)=>
                         `<div data-cd=${city.cd}>
-                            <span>${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
+                            <span onclick="app.polyDict[${city.cd}].focus_on(app.map)">${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
                             <span><label for="local-${pname}-${i}-5"><input type="radio" id="local-${pname}-${i}-5" name="local-${pname}-${i}" value="5" ${city.value==5?"checked":''}></label></span>
                             <span><label for="local-${pname}-${i}-4"><input type="radio" id="local-${pname}-${i}-4" name="local-${pname}-${i}" value="4" ${city.value==4?"checked":''}></label></span>
                             <span><label for="local-${pname}-${i}-3"><input type="radio" id="local-${pname}-${i}-3" name="local-${pname}-${i}" value="3" ${city.value==3?"checked":''}></label></span>
@@ -338,6 +407,7 @@ class App{
         console.log('[queryString_setup]',a)
         const d = this.encode(a)
         changeQueryString(`?sig=${d}`)
+        document.getElementById('url_copy_input').value = location
     }
 
 
@@ -420,6 +490,54 @@ class App{
         }
         return all_out
     }
+
+
+    map_dropdown_drow_init(){
+        const map_tool_location_p_ul = document.querySelector('#map_tool_location_p_ul')
+        const map_tool_location_l_ul =  document.getElementById('map_tool_location_l_ul')
+        removeChilds(map_tool_location_p_ul)
+        for(const key in this.city_dict){
+            console.log('key',key,map_tool_location_p_ul)
+            const li = document.createElement('li')
+            li.innerHTML = `<span class="dropdown-item">${key}</span>`
+            const clickEventLisner = e=>this.map_dropdown_drow(key,'')
+            li.addEventListener('click',clickEventLisner)
+            map_tool_location_p_ul.appendChild(li)
+        }
+        map_tool_location_l_ul.innerHTML = '<span class="dropdown-item disabled">시/도 선택되지 않음</span>'
+    }
+    // 시도명. 시군구명
+    /** 
+     * @param {string} p - 시/도 명
+     * @param {string} l - 시/군/구 명
+    */
+    map_dropdown_drow(p, l){
+        // const map_tool_location_p_ul = document.querySelector('#map_tool_location_p_ul')
+        const map_tool_location_l_ul =  document.getElementById('map_tool_location_l_ul')
+        const map_tool_location_p_btn = document.getElementById('map_tool_location_p_btn')
+        const map_tool_location_l_btn = document.getElementById('map_tool_location_l_btn')
+
+        map_tool_location_p_btn.innerText = this.city_dict[p] ? p : '시/도'
+        map_tool_location_l_btn.innerText = l ? l :'시/군/구'
+        if(this.city_dict[p]){
+            removeChilds(map_tool_location_l_ul)
+            this.city_dict[p].map(local=>{
+                console.log('local',local)
+                const li = document.createElement('li')
+                li.innerHTML = `<span class="dropdown-item">${local.name}</span>`
+                const clickEventLisner = e=>{
+                    this.map_dropdown_drow(p,local.name)
+                    this.polyDict[local.cd].focus_on(this.map)
+                }
+                li.addEventListener('click',clickEventLisner)
+                map_tool_location_l_ul.appendChild(li)
+            })
+            
+        }else{
+            map_tool_location_l_ul.innerHTML = '<span class="dropdown-item disabled">시/도 선택되지 않음</span>'
+        }
+
+    }
 }
 
 
@@ -429,3 +547,19 @@ function changeQueryString(searchString, documentTitle){
     var obj = { Title: documentTitle, Url: location.origin + location.pathname + searchString + location.hash };      
     history.pushState(obj, obj.Title, obj.Url);      
 }
+
+
+function copy2(val) {
+    const t = document.createElement("textarea");
+    document.body.appendChild(t);
+    t.value = val;
+    t.select();
+    document.execCommand('copy');
+    document.body.removeChild(t);
+  }
+
+const removeChilds = (parent) => {
+    while (parent.lastChild) {
+        parent.removeChild(parent.lastChild);
+    }
+};
