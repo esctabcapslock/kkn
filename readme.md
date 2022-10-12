@@ -7,7 +7,7 @@
  방문한 지역 지도 그리기
 
 </div>
-<a href="kkn.esclick.net">
+<a href="kkn.esclick.net" align="center">
 
 ![예시](./doc/example.png)
 
