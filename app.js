@@ -293,9 +293,8 @@ class App{
                 const span = document.createElement('span')
                 span.classList.add('vp_item')
                 span.innerText = item.name
-                const sigData = this.polyDict[item.cd]
-                const map = this.map
-                span.addEventListener('click',()=>{sigData.focus_on(map)})
+                const clickEventLisner = _e=>this.focus_on(key, item.name, item.cd)
+                span.addEventListener('click',clickEventLisner)
                 details.appendChild(span)
             }
             out.push(details)
@@ -353,7 +352,7 @@ class App{
                     </div>
                     ${list.map((city,i)=>
                         `<div data-cd=${city.cd}>
-                            <span data-bs-toggle="tooltip" title="더블클릭하여 이동" ondblclick="app.polyDict[${city.cd}].focus_on(app.map)">${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
+                            <span data-bs-toggle="tooltip" title="더블클릭하여 이동" ondblclick="app.focus_on('${pname}','${city.name}', '${city.cd}')">${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
                             <span><label for="local-${pname}-${i}-5"><input type="radio" id="local-${pname}-${i}-5" name="local-${pname}-${i}" value="5" ${city.value==5?"checked":''}></label></span>
                             <span><label for="local-${pname}-${i}-4"><input type="radio" id="local-${pname}-${i}-4" name="local-${pname}-${i}" value="4" ${city.value==4?"checked":''}></label></span>
                             <span><label for="local-${pname}-${i}-3"><input type="radio" id="local-${pname}-${i}-3" name="local-${pname}-${i}" value="3" ${city.value==3?"checked":''}></label></span>
@@ -548,10 +547,7 @@ class App{
                 console.log('local',local)
                 const li = document.createElement('li')
                 li.innerHTML = `<span class="dropdown-item">${local.name}</span>`
-                const clickEventLisner = e=>{
-                    this.map_dropdown_drow(p,local.name)
-                    this.polyDict[local.cd].focus_on(this.map)
-                }
+                const clickEventLisner = _e=>this.focus_on(p, local.name, local.cd)
                 li.addEventListener('click',clickEventLisner)
                 map_tool_location_l_ul.appendChild(li)
             })
@@ -560,6 +556,18 @@ class App{
             map_tool_location_l_ul.innerHTML = '<span class="dropdown-item disabled">시/도 선택되지 않음</span>'
         }
 
+    }
+
+    /**
+     * 
+     * @param {string} p - 도명
+     * @param {string} l - 시명
+     * @param {number} cd - cd값
+     */
+    focus_on(p,l,cd){
+        const sigData = this.polyDict[cd]
+        sigData.focus_on(this.map)
+        this.map_dropdown_drow(p,l)
     }
 }
 
