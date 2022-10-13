@@ -7,11 +7,11 @@
  방문한 지역 지도 그리기
 
 </div>
-<a href="kkn.esclick.net" align="center">
+<a href="https://kkn.esclock.net" align="center">
 
 ![예시](./doc/example.png)
 
-<b>kkn.esclick.net</b>
+<b>kkn.esclock.net</b>
 </a>
 
 ## 목적
