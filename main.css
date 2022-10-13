@@ -1,5 +1,6 @@
 #map{
     height: 500px;
+    background-color: #FFF;
 }
 
 #point_table{
@@ -120,6 +121,7 @@
 .select_panal>div>span{
     /* margin-bottom: 2px; */
     border-bottom: 2px solid #f8f9fa;
+    vertical-align:middle;
 }
 .select_panal>div:not(div:first-child)>span:not(span:nth-child(-n+1))>label{
     padding: 0;
@@ -146,20 +148,37 @@
     box-shadow: 0 0 0 .25rem rgba(49, 132, 253, .5);
 }
 
-#map_tool_location{
+#map_wrap>div:not(div:last-child){
     z-index: 1000;
     position: relative;
     height: 0;
-    top: 0.8em;
-    width: 100%;
     padding: 0.8em;
     padding-top: 0;
     padding-bottom: 0;
-
     display: flex;
     justify-content: end;
 }
+
+#map_tool{
+    top: 0.8em;
+    width: 100%;
+}
+
+#map_tool div{
+    width: auto;
+    margin-left: 1em;
+}
+
 #map_tool_location ul{
     max-height: 400px;
     overflow-y: scroll;
 }
+
+.map_interactive_no_pointer{
+    cursor: grab;
+}
+
+/* #map_tool_hideBaseMap{
+    top: 4em;
+    /* width: 100%;
+} */

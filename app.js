@@ -34,7 +34,7 @@ class SigData{
     }
 
     isIgnoreMouseEvent(x,y){
-        console.log('[isIgnoreMouseEvent]',this.mousedown.time, Date.now() - this.mousedown.time)
+        // console.log('[isIgnoreMouseEvent]',this.mousedown.time, Date.now() - this.mousedown.time)
         if(!this.mousedown.time) return false
         if ((Date.now() - this.mousedown.time)>10000) return false
         if ((Date.now() - this.mousedown.time)>1000) return true
@@ -114,8 +114,11 @@ class App{
         
         L.tileLayer(`https://tile.openstreetmap.org/{z}/{x}/{y}.png`, {
             maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            // attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(this.map);
+
+        this.map.attributionControl.options.prefix = 'kkn.esclock.net'
+        this.map.attributionControl.addAttribution('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>')
 
         // L.geoJson(border).addTo(map);
         
@@ -162,6 +165,8 @@ class App{
                     
                     // this.polyDict[CD].push(polygon)
                     this.polyDict[CD].add_poly(polygon)
+
+                    polygon._path.classList.add('map_interactive_no_pointer')
                     
 
                     // TODO mousedown 시간 비교해서 드래그면 이벤트 발생 안하기.
@@ -194,7 +199,7 @@ class App{
 
                     polygon._path.addEventListener('mousedown',e=>{
                         const sigData = this.polyDict[CD]
-                        console.log(e)
+                        // console.log(e)
                         sigData.mousedown.time = Number(Date.now())
                         sigData.mousedown.clientX = e.clientX
                         sigData.mousedown.clientY = e.clientY
@@ -203,7 +208,7 @@ class App{
                     })
 
                     polygon._path.addEventListener('mouseup',e=>{
-                        console.log('mouseup')
+                        // console.log('mouseup')
                         const sigData = this.polyDict[CD]
                         sigData.mousedown.overed = true
 
@@ -217,7 +222,7 @@ class App{
                     })
 
                     polygon._path.addEventListener('click',e=>{
-                        console.log('click')
+                        // console.log('click')
                         const sigData = this.polyDict[CD]
 
                         if(sigData.mousedown.overed && sigData.isIgnoreMouseEvent(e.clientX,e.clientY)) {
@@ -353,12 +358,12 @@ class App{
                     ${list.map((city,i)=>
                         `<div data-cd=${city.cd}>
                             <span data-bs-toggle="tooltip" title="더블클릭하여 이동" ondblclick="app.focus_on('${pname}','${city.name}', '${city.cd}')">${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
-                            <span><label for="local-${pname}-${i}-5"><input type="radio" id="local-${pname}-${i}-5" name="local-${pname}-${i}" value="5" ${city.value==5?"checked":''}></label></span>
-                            <span><label for="local-${pname}-${i}-4"><input type="radio" id="local-${pname}-${i}-4" name="local-${pname}-${i}" value="4" ${city.value==4?"checked":''}></label></span>
-                            <span><label for="local-${pname}-${i}-3"><input type="radio" id="local-${pname}-${i}-3" name="local-${pname}-${i}" value="3" ${city.value==3?"checked":''}></label></span>
-                            <span><label for="local-${pname}-${i}-2"><input type="radio" id="local-${pname}-${i}-2" name="local-${pname}-${i}" value="2" ${city.value==2?"checked":''}></label></span>
-                            <span><label for="local-${pname}-${i}-1"><input type="radio" id="local-${pname}-${i}-1" name="local-${pname}-${i}" value="1" ${city.value==1?"checked":''}></label></span>
-                            <span><label for="local-${pname}-${i}-0"><input type="radio" id="local-${pname}-${i}-0" name="local-${pname}-${i}" value="0" ${city.value==0?"checked":''}></label></span>
+                            <span><label><input type="radio" name="local-${pname}-${i}" value="5" ${city.value==5?"checked":''}></label></span>
+                            <span><label><input type="radio" name="local-${pname}-${i}" value="4" ${city.value==4?"checked":''}></label></span>
+                            <span><label><input type="radio" name="local-${pname}-${i}" value="3" ${city.value==3?"checked":''}></label></span>
+                            <span><label><input type="radio" name="local-${pname}-${i}" value="2" ${city.value==2?"checked":''}></label></span>
+                            <span><label><input type="radio" name="local-${pname}-${i}" value="1" ${city.value==1?"checked":''}></label></span>
+                            <span><label><input type="radio" name="local-${pname}-${i}" value="0" ${city.value==0?"checked":''}></label></span>
                         </div>`
                     ).join('')}
                 </div>
@@ -515,14 +520,45 @@ class App{
     }
 
     map_dropdown_drow_init(){
+
+        // 레이어 관련 정리
+
+        const map_tool_basemap_switch = document.getElementById('map_tool_basemap_switch')
+        const basemapClickEventLisner = ()=>this.hide_basemap(!map_tool_basemap_switch.checked)
+        basemapClickEventLisner() // 선택 상태에 맞게 초기화
+        map_tool_basemap_switch.addEventListener('click',basemapClickEventLisner)
+
+        // 시군구 경계파일 설정
+        const provinceBound = {}
+        for (const province in this.city_dict){
+            const ne = {lat:0,lng:0}
+            const sw = {lat:90,lng:180}
+            this.city_dict[province].forEach(city=>{
+            const {_northEast, _southWest} = this.polyDict[city.cd].polyList[0].getBounds()
+                    // console.log(_northEast, _southWest)
+                    ne.lat = Math.max(ne.lat, _northEast.lat)
+                    ne.lng = Math.max(ne.lng, _northEast.lng)
+                    sw.lat = Math.min(sw.lat, _southWest.lat)
+                    sw.lng = Math.min(sw.lng, _southWest.lng)
+            });
+            provinceBound[province] = L.latLngBounds(L.latLng(ne.lat, ne.lng), L.latLng(sw.lat, sw.lng))
+        }
         const map_tool_location_p_ul = document.querySelector('#map_tool_location_p_ul')
         const map_tool_location_l_ul =  document.getElementById('map_tool_location_l_ul')
+        const map_tool_location_l_btn =  document.getElementById('map_tool_location_l_btn')
         removeChilds(map_tool_location_p_ul)
-        for(const key in this.city_dict){
+        for(const province in this.city_dict){
             // console.log('key',key,map_tool_location_p_ul)
             const li = document.createElement('li')
-            li.innerHTML = `<span class="dropdown-item">${key}</span>`
-            const clickEventLisner = e=>this.map_dropdown_drow(key,'')
+            li.innerHTML = `<span class="dropdown-item">${province}</span>`
+            const clickEventLisner = e=>{
+                this.map_dropdown_drow(province,'')
+                console.log('provinceBound[province]',provinceBound[province])
+                e.preventDefault()
+                e.stopPropagation()
+                map_tool_location_l_btn.click()
+                this.map.fitBounds(provinceBound[province]);
+            }
             li.addEventListener('click',clickEventLisner)
             map_tool_location_p_ul.appendChild(li)
         }
@@ -539,12 +575,15 @@ class App{
         const map_tool_location_p_btn = document.getElementById('map_tool_location_p_btn')
         const map_tool_location_l_btn = document.getElementById('map_tool_location_l_btn')
 
+
+        if(map_tool_location_l_ul.style.transform) return // 시/군/구 선택중이면, 반영하지 말고 기다리기.
+
         map_tool_location_p_btn.innerText = this.city_dict[p] ? p : '시/도'
         map_tool_location_l_btn.innerText = l ? l :'시/군/구'
         if(this.city_dict[p]){
             removeChilds(map_tool_location_l_ul)
             this.city_dict[p].map(local=>{
-                console.log('local',local)
+                // console.log('local',local)
                 const li = document.createElement('li')
                 li.innerHTML = `<span class="dropdown-item">${local.name}</span>`
                 const clickEventLisner = _e=>this.focus_on(p, local.name, local.cd)
@@ -568,6 +607,11 @@ class App{
         const sigData = this.polyDict[cd]
         sigData.focus_on(this.map)
         this.map_dropdown_drow(p,l)
+    }
+
+
+    hide_basemap(flag){
+        [...document.getElementsByClassName('leaflet-tile-pane')].map(ele=>ele.style.opacity=flag?0:'')
     }
 }
 
@@ -607,3 +651,4 @@ const apply_tooltip = ()=>{
         ele.checked=true
     })
 */
+

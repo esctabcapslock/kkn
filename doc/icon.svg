@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+<style type="text/css">
+	.st0{display:none;}
+	.st1{fill:#AAD3DF;}
+	.st2{fill:#D6FEE0;}
+</style>
+<g>
+	<rect class="st1" width="256" height="256"/>
+	<polygon class="st2" points="180,-28 180,3 149,24 129,38 129,55 147,64 170,107 170,140 175,139 165,167 141,173 115,189 95,185 
+		105,153 107,131 98,121 108,113 105,101 67,87 79,48 73,40 54,41 80,6 105,-9 118,-25 125,-14 136,-13 149,-16 145,-31 172,-47 
+		180,-62 196,-48 186,-35 	"/>
+	<polygon class="st2" points="106,207 100,211 98,214 100,217 107,217 115,212 115,209 112,207 	"/>
+	<polygon class="st2" points="200,100 203,103 204,98 	"/>
+	<rect x="225" y="107" class="st2" width="1" height="1"/>
+</g>
+</svg>
