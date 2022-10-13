@@ -1,6 +1,9 @@
 #map{
     height: 500px;
     background-color: #FFF;
+
+    /* height: 3000px; */
+    /* width: 3000px; */
 }
 
 #point_table{

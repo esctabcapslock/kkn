@@ -167,6 +167,7 @@ class App{
                     this.polyDict[CD].add_poly(polygon)
 
                     polygon._path.classList.add('map_interactive_no_pointer')
+                    polygon._path.setAttribute('data-cd',CD)
                     
 
                     // TODO mousedown 시간 비교해서 드래그면 이벤트 발생 안하기.
@@ -273,6 +274,68 @@ class App{
             this.draw_visit_panal()
             this.queryString_setup()
 
+        })
+
+        const save_as_png_btn =  document.getElementById('save_as_png_btn') 
+        save_as_png_btn.addEventListener('click',()=>{
+            save_as_png_btn.innerText = '저장중...'
+            save_as_png_btn.classList.add('disabled')
+
+            const div = document.createElement('div')
+            div.innerHTML = svgHTML
+            const svg = div.getElementsByTagName('svg')[0]
+            const paths = [...svg.getElementsByTagName('path')]
+            paths.forEach(ele=>{
+                const cd = ele.attributes['data-cd'].value
+                ele.attributes['fill'].value = app.polyDict[cd].get_color()
+                // console.log('cd:',cd,ele.attributes['fill'].value)
+            })
+            const svgData = new XMLSerializer().serializeToString( svg );
+
+            const save_callback = ()=>{
+                save_as_png_btn.innerText = 'png로 저장'
+                save_as_png_btn.classList.remove('disabled')
+            }
+
+
+            try{
+                savePngFromSvg(svgData, 3600, 3600, 3,save_callback)
+            }catch(e){
+                console.log('error: e1',e)
+                alert('png 저장 중 오류가 발생했습니다.\n이미지 크기를 줄여 다시 시도합니다.')
+                try{
+                    savePngFromSvg(svgData, 3600, 3600, 1,save_callback)
+                }catch(e){
+                    console.log('error: e2',e)
+                    alert('png 저장 중 오류가 발생했습니다.\n저장을 취소합니다.')
+                    save_as_png_btn.innerText = 'png로 저장'
+                    save_as_png_btn.classList.remove('disabled')
+                }
+            }
+        })
+
+
+        const save_as_svg_btn =  document.getElementById('save_as_svg_btn') 
+        save_as_svg_btn.addEventListener('click',()=>{
+            save_as_svg_btn.innerText = '저장중...'
+            save_as_svg_btn.classList.add('disabled')
+
+            const div = document.createElement('div')
+            div.innerHTML = svgHTML
+            const svg = div.getElementsByTagName('svg')[0]
+            const paths = [...svg.getElementsByTagName('path')]
+            paths.forEach(ele=>{
+                const cd = ele.attributes['data-cd'].value
+                ele.attributes['fill'].value = app.polyDict[cd].get_color()
+                // console.log('cd:',cd,ele.attributes['fill'].value)
+            })
+
+            const download = document.createElement('a');
+            download.href = 'data:image/svg+xml/svg;base64,'+btoa(div.innerHTML)
+            download.download = 'map.svg';
+            download.click();
+            save_as_svg_btn.innerText = 'svg로 저장'
+            save_as_svg_btn.classList.remove('disabled')
         })
         
 
@@ -652,3 +715,30 @@ const apply_tooltip = ()=>{
     })
 */
 
+
+
+function savePngFromSvg(svgData, width, height, scale, callBack){
+    console.log('[savePngFromSvg]')
+    const canvas = document.createElement("canvas");
+    canvas.width = width*scale//svgSize.width * 3;
+    canvas.height = height*scale///svgSize.height * 3;
+    canvas.style.width = width//svgSize.width;
+    canvas.style.height = height//svgSize.height;
+    const ctx = canvas.getContext('2d');
+    console.log('[ctx]-be',scale,ctx, canvas.getContext)
+    ctx.scale(scale, scale);
+    console.log('[ctx]-ok',scale, ctx)
+    const img = document.createElement("img");
+    img.setAttribute("src", "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData))));
+    // rect.setAttribute("fill", "red")
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+        const canvasdata = canvas.toDataURL("image/png", 1);
+        const download = document.createElement('a');
+        download.href = canvasdata
+        download.download = 'map.png';
+        download.click();
+
+        callBack()
+    };
+}
