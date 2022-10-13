@@ -293,7 +293,7 @@ class App{
             const svgData = new XMLSerializer().serializeToString( svg );
 
             const save_callback = ()=>{
-                save_as_png_btn.innerText = 'png로 저장'
+                save_as_png_btn.innerText = 'png로 내보내기'
                 save_as_png_btn.classList.remove('disabled')
             }
 
@@ -308,8 +308,7 @@ class App{
                 }catch(e){
                     console.log('error: e2',e)
                     alert('png 저장 중 오류가 발생했습니다.\n저장을 취소합니다.')
-                    save_as_png_btn.innerText = 'png로 저장'
-                    save_as_png_btn.classList.remove('disabled')
+                    save_callback()
                 }
             }
         })
