@@ -430,7 +430,7 @@ class App{
 
         
         const record = (c)=>{
-            out+='_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789='[c]
+            out+='_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$'[c]
         }
         const ar_get = i=>ar[i]?ar[i]:0
         for(let i=0; i<ar.length+4; i+=5){
@@ -472,7 +472,7 @@ class App{
         // 하나는 6비트
 
         for(const c of str){
-            const v = '_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789='.indexOf(c)
+            const v = '_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$'.indexOf(c)
             if(v==-1) throw('이상한 문자')
             top += 6
             last = last*(1<<6)+v
@@ -591,3 +591,11 @@ const apply_tooltip = ()=>{
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     const tooltipList = tooltipTriggerList.map(tooltipTriggerEl=>new bootstrap.Tooltip(tooltipTriggerEl))
 }
+
+// 랜덤 선택 코드
+/*
+    [...document.querySelectorAll('#select_panal input')].forEach(ele=>{
+        if(Math.random()>0.2) return;
+        ele.checked=true
+    })
+*/
