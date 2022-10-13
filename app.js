@@ -52,7 +52,7 @@ class SigData{
     }
 
     draw_panal(){
-        console.log('draw_panal',this.select_panal_ele,this.value)
+        // console.log('draw_panal',this.select_panal_ele,this.value)
         const inputs = [...this.select_panal_ele.getElementsByTagName('input')]
         inputs[5-this.value].checked=true
     }
@@ -344,16 +344,16 @@ class App{
                 <div id="" class="select_panal">
                     <div>
                         <span>시/군/구</span>
-                        <span>거주</span>
-                        <span>숙박</span>
-                        <span>방문</span>
-                        <span>접지</span>
-                        <span>통과</span>
-                        <span>없음</span>
+                        <span data-bs-toggle="tooltip" title="더블클릭하여 모두 선택" ondblclick="app.select_all_by_province('${pname}',5)">거주</span>
+                        <span data-bs-toggle="tooltip" title="더블클릭하여 모두 선택" ondblclick="app.select_all_by_province('${pname}',4)">숙박</span>
+                        <span data-bs-toggle="tooltip" title="더블클릭하여 모두 선택" ondblclick="app.select_all_by_province('${pname}',3)">방문</span>
+                        <span data-bs-toggle="tooltip" title="더블클릭하여 모두 선택" ondblclick="app.select_all_by_province('${pname}',2)">접지</span>
+                        <span data-bs-toggle="tooltip" title="더블클릭하여 모두 선택" ondblclick="app.select_all_by_province('${pname}',1)">통과</span>
+                        <span data-bs-toggle="tooltip" title="더블클릭하여 모두 선택" ondblclick="app.select_all_by_province('${pname}',0)">없음</span>
                     </div>
                     ${list.map((city,i)=>
                         `<div data-cd=${city.cd}>
-                            <span onclick="app.polyDict[${city.cd}].focus_on(app.map)">${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
+                            <span data-bs-toggle="tooltip" title="더블클릭하여 이동" ondblclick="app.polyDict[${city.cd}].focus_on(app.map)">${city.name/*.split(' ').map(v=>` ${v} `).join('&nbsp;')*/}</span>
                             <span><label for="local-${pname}-${i}-5"><input type="radio" id="local-${pname}-${i}-5" name="local-${pname}-${i}" value="5" ${city.value==5?"checked":''}></label></span>
                             <span><label for="local-${pname}-${i}-4"><input type="radio" id="local-${pname}-${i}-4" name="local-${pname}-${i}" value="4" ${city.value==4?"checked":''}></label></span>
                             <span><label for="local-${pname}-${i}-3"><input type="radio" id="local-${pname}-${i}-3" name="local-${pname}-${i}" value="3" ${city.value==3?"checked":''}></label></span>
@@ -386,19 +386,23 @@ class App{
         const p_ar = [...document.querySelectorAll('#select_panal>div')]
         const min_ind = ar=>ar.indexOf(Math.min(...ar))
         
+        //균형 맞추어 업로드
         for(const html of out){
             const min =  min_ind(p_ar.map(v=>v.innerHTML.length))
             // console.log(html, min)
             p_ar[min].innerHTML += html
         }
 
-        // select_panal_ele     
+        
+        // select_panal_ele 등록
         const local_ar = [...document.querySelectorAll('div.select_panal>div:not(div:first-child)')]
         if(!local_ar) throw('err')
         local_ar.map(ele=>{
             const cd = ele.attributes['data-cd'].value
             this.polyDict[cd].select_panal_ele = ele
         })
+
+        apply_tooltip()
 
     }
 
@@ -492,12 +496,31 @@ class App{
     }
 
 
+    /**
+     * 
+     * @param {string} p - 도 이름 
+     * @param {number} score - 점수
+     */
+    select_all_by_province(p,score){
+        console.log('[select_all_by_province]',p,score)
+        if(!this.city_dict[p]) throw('잘못됨')
+        this.city_dict[p].forEach(city=>{
+            const sigData = this.polyDict[city.cd]
+            if(!sigData) throw(`에러, 도시명:${city.name}`)
+            console.log('sigdata',sigData)
+            sigData.value = score
+            sigData.draw_map()
+            sigData.draw_panal()
+        })
+        this.draw_visit_panal()
+    }
+
     map_dropdown_drow_init(){
         const map_tool_location_p_ul = document.querySelector('#map_tool_location_p_ul')
         const map_tool_location_l_ul =  document.getElementById('map_tool_location_l_ul')
         removeChilds(map_tool_location_p_ul)
         for(const key in this.city_dict){
-            console.log('key',key,map_tool_location_p_ul)
+            // console.log('key',key,map_tool_location_p_ul)
             const li = document.createElement('li')
             li.innerHTML = `<span class="dropdown-item">${key}</span>`
             const clickEventLisner = e=>this.map_dropdown_drow(key,'')
@@ -563,3 +586,8 @@ const removeChilds = (parent) => {
         parent.removeChild(parent.lastChild);
     }
 };
+
+const apply_tooltip = ()=>{
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipList = tooltipTriggerList.map(tooltipTriggerEl=>new bootstrap.Tooltip(tooltipTriggerEl))
+}
