@@ -7,3 +7,6 @@
 *.qmd
 geodata/mydata.js
 doc/icon-save.svg
+*.txt
+*.zip
+*.kmz
